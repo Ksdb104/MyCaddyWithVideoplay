@@ -383,7 +383,7 @@ footer {
 						<td class="hideable"></td>
 					</tr>
 					{{- end}}
-					{{- range .Items}}
+					{{- range $index, $element := .Items}}
 					<tr class="file">
 						<td></td>
 						<td>
@@ -395,6 +395,13 @@ footer {
 								{{- end}}
 								<span class="name">{{html .Name}}</span>
 							</a>
+							<span style="margin-left:10px">
+								<span onclick="createvideoplayer('{{html .URL}}','{{$index}}')">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+									</svg>
+								</span>
+							</span>
 						</td>
 						{{- if .IsDir}}
 						<td data-order="-1">&mdash;</td>
@@ -409,16 +416,21 @@ footer {
 				</table>
 			</div>
 		</main>
+		<div class="backmodel">
+			<div class="close" onclick="destroyplayer()">X</div>
+			<div id="videoplayer"></div>
+		</div>
 		<footer>
 			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
 		</footer>
 		<script>
-			var filterEl = document.getElementById('filter');
+			let filterEl = document.getElementById('filter');
+			let player
 			filterEl.focus({ preventScroll: true });
 
 			function initFilter() {
 				if (!filterEl.value) {
-					var filterParam = new URL(window.location.href).searchParams.get('filter');
+					let filterParam = new URL(window.location.href).searchParams.get('filter');
 					if (filterParam) {
 						filterEl.value = filterParam;
 					}
@@ -427,15 +439,15 @@ footer {
 			}
 
 			function filter() {
-				var q = filterEl.value.trim().toLowerCase();
-				var elems = document.querySelectorAll('tr.file');
+				let q = filterEl.value.trim().toLowerCase();
+				let elems = document.querySelectorAll('tr.file');
 				elems.forEach(function(el) {
 					if (!q) {
 						el.style.display = '';
 						return;
 					}
-					var nameEl = el.querySelector('.name');
-					var nameVal = nameEl.textContent.trim().toLowerCase();
+					let nameEl = el.querySelector('.name');
+					let nameVal = nameEl.textContent.trim().toLowerCase();
 					if (nameVal.indexOf(q) !== -1) {
 						el.style.display = '';
 					} else {
@@ -448,7 +460,7 @@ footer {
 				if (e.textContent === undefined) {
 					return;
 				}
-				var d = new Date(e.getAttribute('datetime'));
+				let d = new Date(e.getAttribute('datetime'));
 				if (isNaN(d)) {
 					d = new Date(e.textContent);
 					if (isNaN(d)) {
@@ -457,7 +469,15 @@ footer {
 				}
 				e.textContent = d.toLocaleString([], {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"});
 			}
-			var timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
+
+			function createvideoplayer(videourl,index){
+
+			}
+
+			function destroyplayer(){
+				player.destroy();
+			}
+			let timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
 			timeList.forEach(localizeDatetime);
 		</script>
 	</body>
