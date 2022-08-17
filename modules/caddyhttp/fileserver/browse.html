@@ -275,6 +275,7 @@ footer {
 	height: 80vh;
 	position: absolute;
 	transition: all 0.5s;
+	padding-top: 40px;
 }
 .backmodel > .close{
 	position: absolute;
@@ -448,6 +449,8 @@ footer {
 		<footer>
 			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
 		</footer>
+		<script src="//unpkg.byted-static.com/xgplayer/2.31.6/browser/index.js" charset="utf-8"></script>
+      	<script src="//unpkg.byted-static.com/xgplayer-flv.js/2.1.2/browser/index.js" charset="utf-8"></script>
 		<script>
 			let filterEl = document.getElementById('filter');
 			let player
@@ -498,11 +501,56 @@ footer {
 			function createvideoplayer(videourl,index){
 				console.log(videourl)
 				console.log(index)
+				let lastname = videourl.split('.')
+				console.log(lastname)
+				if(lastname[lastname.length-1]=='mp4'){
+					player = new Player({
+						"id": "videoplayer",
+						"url": videourl,
+						'autoplay': true,
+						"playsinline": true,
+						"fluid": true,
+						"download": true,
+						"volume": 0.6,
+						'fitVideoSize': 'fixWidth',
+					});
+					player.on('ended',()=>{
+						let elems = document.querySelectorAll('tr.file');
+						console.log(elems)
+						let nexturl = elems[index+1].querySelector('a').href
+						console.log(nexturl)
+						player.src = nexturl
+					})
+					player.once('destroy',()=>{
+						player.off('ended',()=>{console.log('destroy')})
+					})
+				}else if(lastname[lastname.length-1]=='flv'){
+					player = new FlvJsPlayer({
+						"id": "videoplayer",
+						"url": videourl,
+						'autoplay': true,
+						"playsinline": true,
+						"fluid": true,
+						"download": true,
+						"volume": 0.6,
+						'fitVideoSize': 'fixWidth'
+					});
+					player.on('ended',()=>{
+						let elems = document.querySelectorAll('tr.file');
+						console.log(elems)
+						let nexturl = elems[index+1].querySelector('a').href
+						console.log(nexturl)
+						player.src = nexturl
+					})
+					player.once('destroy',()=>{
+						player.off('ended',()=>{console.log('destroy')})
+					})
+				}
 				document.getElementById('playerclock').style.top='0vh'
 			}
 
 			function destroyplayer(){
-				// player.destroy();
+				player.destroy();
 				document.getElementById('playerclock').style.top='-80vh'
 			}
 			let timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
