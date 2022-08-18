@@ -272,7 +272,8 @@ footer {
 .backmodel{
 	background: rgba(0, 0, 0, 0.2);
 	width: 100vw;
-	height: 80vh;
+	height: 75vh;
+	max-height: 75vh;
 	position: absolute;
 	transition: all 0.5s;
 	padding-top: 40px;
@@ -509,48 +510,41 @@ footer {
 						"url": videourl,
 						'autoplay': true,
 						"playsinline": true,
-						"fluid": true,
+						// "fluid": true,
 						"download": true,
 						"volume": 0.6,
-						'fitVideoSize': 'fixWidth',
+						width:'100%',
+						height:'100%'
+						// 'fitVideoSize': 'fixHeight',
 					});
-					player.on('ended',()=>{
-						let elems = document.querySelectorAll('tr.file');
-						console.log(elems)
-						let nexturl = elems[index+1].querySelector('a').href
-						console.log(nexturl)
-						player.src = nexturl
-					})
-					player.once('destroy',()=>{
-						player.off('ended',()=>{console.log('destroy')})
-					})
 				}else if(lastname[lastname.length-1]=='flv'){
 					player = new FlvJsPlayer({
 						"id": "videoplayer",
 						"url": videourl,
 						'autoplay': true,
 						"playsinline": true,
-						"fluid": true,
+						// "fluid": true,
 						"download": true,
 						"volume": 0.6,
-						'fitVideoSize': 'fixWidth'
+						width:'100%',
+						height:'100%'
+						// 'fitVideoSize': 'fixHeight'
 					});
-					player.on('ended',()=>{
-						let elems = document.querySelectorAll('tr.file');
-						console.log(elems)
-						let nexturl = elems[index+1].querySelector('a').href
-						console.log(nexturl)
-						player.src = nexturl
-					})
-					player.once('destroy',()=>{
-						player.off('ended',()=>{console.log('destroy')})
-					})
 				}
+				player.on('ended',()=>{
+					let elems = document.querySelectorAll('tr.file');
+					console.log(elems)
+					let nexturl = elems[index+1].querySelector('a').href
+					console.log(nexturl)
+					player.src = nexturl
+				})
 				document.getElementById('playerclock').style.top='0vh'
 			}
 
 			function destroyplayer(){
+				player.off('ended',()=>{console.log('destroy')})
 				player.destroy();
+				document.getElementById('videoplayer').removeAttribute('style')
 				document.getElementById('playerclock').style.top='-80vh'
 			}
 			let timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
