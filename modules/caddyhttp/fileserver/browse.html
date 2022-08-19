@@ -272,8 +272,8 @@ footer {
 .backmodel{
 	background: rgba(0, 0, 0, 0.2);
 	width: 100vw;
-	height: 75vh;
-	max-height: 75vh;
+	height: 80vh;
+	max-height: 80vh;
 	position: absolute;
 	transition: all 0.5s;
 	padding-top: 40px;
@@ -443,8 +443,8 @@ footer {
 				</table>
 			</div>
 		</main>
-		<div class="backmodel" id="playerclock" style="top:-80vh">
-			<div class="close" onclick="destroyplayer()">X</div>
+		<div class="backmodel" id="playerclock" style="top:-100vh">
+			<div class="close" onclick="destroyplayer()" title="关闭">X</div>
 			<div id="videoplayer"></div>
 		</div>
 		<footer>
@@ -499,23 +499,29 @@ footer {
 				e.textContent = d.toLocaleString([], {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"});
 			}
 
+			function destroyplayer(){
+				player.off('ended',()=>{console.log('destroy')})
+				player.destroy();
+				player=null;
+				document.getElementById('videoplayer').removeAttribute('style')
+				document.getElementById('playerclock').style.top='-100vh'
+			}
+
 			function createvideoplayer(videourl,index){
-				console.log(videourl)
-				console.log(index)
+				if(player){
+					destroyplayer()
+				}
 				let lastname = videourl.split('.')
-				console.log(lastname)
 				if(lastname[lastname.length-1]=='mp4'){
 					player = new Player({
 						"id": "videoplayer",
 						"url": videourl,
 						'autoplay': true,
 						"playsinline": true,
-						// "fluid": true,
 						"download": true,
 						"volume": 0.6,
 						width:'100%',
 						height:'100%'
-						// 'fitVideoSize': 'fixHeight',
 					});
 				}else if(lastname[lastname.length-1]=='flv'){
 					player = new FlvJsPlayer({
@@ -523,29 +529,20 @@ footer {
 						"url": videourl,
 						'autoplay': true,
 						"playsinline": true,
-						// "fluid": true,
 						"download": true,
 						"volume": 0.6,
 						width:'100%',
 						height:'100%'
-						// 'fitVideoSize': 'fixHeight'
 					});
 				}
 				player.on('ended',()=>{
 					let elems = document.querySelectorAll('tr.file');
-					console.log(elems)
-					let nexturl = elems[index+1].querySelector('a').href
-					console.log(nexturl)
-					player.src = nexturl
+					let nexturl = elems[Number(index)+1].querySelector('a').getAttribute('href')
+					if(nexturl){
+						player.src = nexturl
+					}
 				})
 				document.getElementById('playerclock').style.top='0vh'
-			}
-
-			function destroyplayer(){
-				player.off('ended',()=>{console.log('destroy')})
-				player.destroy();
-				document.getElementById('videoplayer').removeAttribute('style')
-				document.getElementById('playerclock').style.top='-80vh'
 			}
 			let timeList = Array.prototype.slice.call(document.getElementsByTagName("time"));
 			timeList.forEach(localizeDatetime);
