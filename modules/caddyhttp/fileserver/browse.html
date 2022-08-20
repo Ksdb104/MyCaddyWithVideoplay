@@ -271,9 +271,9 @@ footer {
 }
 .backmodel{
 	background: rgba(0, 0, 0, 0.2);
-	width: 100vw;
-	height: 80vh;
-	max-height: 80vh;
+	width: 100%;
+	height: 85vh;
+	max-height: 85vh;
 	position: absolute;
 	transition: all 0.5s;
 	padding-top: 40px;
@@ -504,12 +504,23 @@ footer {
 				player.destroy();
 				player=null;
 				document.getElementById('videoplayer').removeAttribute('style')
+				document.getElementById('videoplayer').innerHTML = ""
 				document.getElementById('playerclock').style.top='-100vh'
 			}
 
 			function createvideoplayer(videourl,index){
 				if(player){
-					destroyplayer()
+					player.src = videourl
+					player.off('ended',()=>{console.log('不要乱点啊哼哼哼啊啊啊啊啊啊啊啊啊')})
+					player.on('ended',()=>{
+						let elems = document.querySelectorAll('tr.file');
+						let nexturl = elems[Number(index)+1].querySelector('a').getAttribute('href')
+						index = Number(index)+1
+						if(nexturl){
+							player.src = nexturl
+						}
+					})
+					return
 				}
 				let lastname = videourl.split('.')
 				if(lastname[lastname.length-1]=='mp4'){
@@ -538,6 +549,7 @@ footer {
 				player.on('ended',()=>{
 					let elems = document.querySelectorAll('tr.file');
 					let nexturl = elems[Number(index)+1].querySelector('a').getAttribute('href')
+					index = Number(index)+1
 					if(nexturl){
 						player.src = nexturl
 					}
